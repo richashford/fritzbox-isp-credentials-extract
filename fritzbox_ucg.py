@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract replacement UniFi gateway WAN settings from a FRITZ!Box export.
+"""Extract replacement-router WAN settings from a FRITZ!Box export.
 
 The export password is requested with getpass and is never echoed. Only the
 internet PPPoE credentials and relevant WAN parameters are decrypted. No
@@ -33,7 +33,7 @@ FRITZ_BASE32_LOOKUP = {char: index for index, char in enumerate(FRITZ_BASE32_ALP
 
 
 @dataclass
-class UcgSettings:
+class RouterSettings:
     source_file: str
     fritzbox_model: str
     fritzos_version: str
@@ -195,7 +195,7 @@ def integer_or_none(raw: str | None) -> int | None:
         return None
 
 
-def parse_backup(path: Path, password: str) -> UcgSettings:
+def parse_backup(path: Path, password: str) -> RouterSettings:
     try:
         export_text = path.read_text(encoding="utf-8", errors="surrogateescape")
     except OSError as exc:
@@ -263,7 +263,7 @@ def parse_backup(path: Path, password: str) -> UcgSettings:
     provider_match = re.search(r'^\s*active_provider\s*=\s*"([^"]*)";', ar7, re.MULTILINE)
     provider = provider_match.group(1) if provider_match else "Unknown"
 
-    return UcgSettings(
+    return RouterSettings(
         source_file=str(path),
         fritzbox_model=header.group(1),
         fritzos_version=firmware.group(1) if firmware else "Unknown",
@@ -280,7 +280,7 @@ def parse_backup(path: Path, password: str) -> UcgSettings:
     )
 
 
-def print_human(settings: UcgSettings, *, redact_password: bool) -> None:
+def print_human(settings: RouterSettings, *, redact_password: bool) -> None:
     password = "[redacted]" if redact_password else settings.pppoe_password
     vlan = "Disabled"
     if settings.vlan_enabled:
@@ -292,7 +292,7 @@ def print_human(settings: UcgSettings, *, redact_password: bool) -> None:
     print(f"  Model:              {settings.fritzbox_model}")
     print(f"  FRITZ!OS:           {settings.fritzos_version}")
     print(f"  Provider:           {settings.provider}")
-    print("\nUniFi Cloud Gateway — Settings > Internet > Primary (WAN1)")
+    print("\nReplacement router WAN settings")
     print(f"  IPv4 Connection:    {settings.ipv4_connection}")
     print(f"  Username:           {settings.pppoe_username}")
     print(f"  Password:           {password}")
@@ -306,7 +306,10 @@ def print_human(settings: UcgSettings, *, redact_password: bool) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Recover the WAN settings needed to replace a FRITZ!Box with a UniFi Cloud Gateway."
+        description=(
+            "Recover PPPoE credentials and WAN settings for replacing a "
+            "FRITZ!Box with another router."
+        )
     )
     parser.add_argument("backup", type=Path, help="FRITZ!Box .export backup file")
     parser.add_argument(

@@ -1,8 +1,8 @@
-# FRITZ!Box to UniFi Cloud Gateway settings extractor
+# FRITZ!Box ISP credentials extractor
 
 This local command-line tool reads a password-protected FRITZ!Box `.export`
 backup and displays the WAN settings needed when replacing the FRITZ!Box with a
-UniFi Cloud Gateway.
+different router that requires the ISP's PPPoE credentials.
 
 It extracts only the internet PPPoE account and relevant WAN settings. The
 backup password is entered through a hidden prompt, the decrypted values remain
@@ -28,7 +28,7 @@ The tool prompts for the password used when the backup was created and prints:
 - VLAN requirement, ID and priority
 - MTU and DNS configuration
 - IPv6 state
-- the corresponding UniFi WAN field names
+- the corresponding replacement-router WAN settings
 
 To make output safe to paste into a support conversation:
 
@@ -50,8 +50,9 @@ history, tickets, logs or shared documents.
 
 - The backup must have been saved with a known export password.
 - The current version expects a PPPoE internet account in `ar7.cfg`.
-- A UniFi Cloud Gateway requires an Ethernet handoff. A DSL-only installation
-  still needs a compatible bridge modem or an ONT between the line and gateway.
+- A replacement Ethernet router requires an Ethernet handoff. A DSL-only
+  installation still needs a compatible bridge modem or an ONT between the
+  line and router.
 - Always confirm the physical access technology and any ISP-specific settings
   before disconnecting a working router.
 
