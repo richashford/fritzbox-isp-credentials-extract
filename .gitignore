@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+*.export
+AGENTS.md
+CLAUDE.md
+GEMINI.md
